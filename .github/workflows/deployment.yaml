@@ -1,0 +1,35 @@
+
+# on:
+#   push:
+#     branches: [main]
+
+
+name: Run Selenium On GitHub Action
+on:
+  # push:
+  #   branches: [main]
+  schedule:
+  # Schedule this job because our time in IST and server time is UTC
+    - cron: '30 4,14 * * *' # Schedule to run at 10 AM and 8 PM (UTC time)
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checking out repo
+        uses: actions/checkout@v3
+      - name: Setting up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Installing package list
+        run: apt list --installed    
+        
+      - name: Installing all dependency 
+        run: pip install -r requirements.txt
+
+      - name: Run Script
+        env:
+          SLACK_USER_TOKEN: ${{ secrets.SLACK_USER_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+        run: |
+          python main.py
